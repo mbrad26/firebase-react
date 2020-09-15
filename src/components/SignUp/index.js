@@ -13,64 +13,70 @@ const SignUpPage = () => {
   );
 };
 
+const INITIAL_STATE = {
+  username: '',
+  email: '', 
+  passwordOne: '', 
+  passwordTwo: '', 
+  error: null,
+}
+
 const SignUpForm = () => {
   const { doCreateUserWithEmailAndPassword } = useContext(FirebaseContext);
-
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [passwordOne, setPasswordOne] = useState('');
-  const [passwordTwo, setPasswordTwo] = useState('');
-  const [error, setError] = useState('');
+  const [user, setUser] = useState(INITIAL_STATE);
 
   const isInvalid = 
-    passwordOne !== passwordTwo ||
-    passwordOne === '' ||
-    email === '' ||
-    username === '';
+    user.passwordOne !== user.passwordTwo ||
+    user.passwordOne === '' ||
+    user.email === '' ||
+    user.username === '';
 
   const onSubmit = async event => {
     event.preventDefault();
     try {
-      const result = await doCreateUserWithEmailAndPassword(email, passwordOne);
-      console.log(result.user.email)
+      const result = await doCreateUserWithEmailAndPassword(user.email, user.passwordOne);
+      console.log(result);
+      setUser(INITIAL_STATE);
     } catch (error) {
-      setError(error);
+      return error;
     }
   };
+
+  const onChange = event => setUser({ ...user, [event.target.name]: event.target.valuelue });
 
   return (
     <form onSubmit={onSubmit}>
       <input 
         type='text'
         name='username'
-        value={username}
-        onChange={e => setUsername(e.target.value)}
+        value={user.username}
+        onChange={onChange}
         placeholder='Full Name'
       />
       <input 
         type='text'
         name='email'
-        value={email}
-        onChange={e => setEmail(e.target.value)}
+        value={user.email}
+        onChange={onChange}
         placeholder='Email'
       />
       <input 
         type='text'
         name='passwordOne'
-        value={passwordOne}
-        onChange={e => setPasswordOne(e.target.value)}
+        value={user.passwordOne}
+        onChange={onChange}
         placeholder='Password'
       />
       <input 
         type='text'
         name='passwordTwo'
-        value={passwordTwo}
-        onChange={e => setPasswordTwo(e.target.value)}
+        value={user.passwordTwo}
+        onChange={onChange}
         placeholder='Confirm Password'
       />
       <button disabled={isInvalid} type='submit'>Sign Up</button>
 
-      {error && <p>{error.message}</p>}
+      {user.error && <p>{user.error.message}</p>}
     </form>
   );
 };
