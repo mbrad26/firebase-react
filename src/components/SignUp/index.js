@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 
 import { FirebaseContext } from '../Firebase';
 import * as ROUTES from '../../constants/routes';
@@ -13,70 +13,75 @@ const SignUpPage = () => {
   );
 };
 
-const INITIAL_STATE = {
+const INITIAL_STATE = { 
   username: '',
   email: '', 
   passwordOne: '', 
   passwordTwo: '', 
   error: null,
-}
+};
 
 const SignUpForm = () => {
   const { doCreateUserWithEmailAndPassword } = useContext(FirebaseContext);
   const [user, setUser] = useState(INITIAL_STATE);
+  const history = useHistory();
+
+  const { username, email, passwordOne, passwordTwo, error } = user;
 
   const isInvalid = 
-    user.passwordOne !== user.passwordTwo ||
-    user.passwordOne === '' ||
-    user.email === '' ||
-    user.username === '';
+    passwordOne !== passwordTwo ||
+    passwordOne === '' ||
+    email === '' ||
+    username === '';
+
+  const onChange = event =>
+    setUser({ ...user, [event.target.name]: event.target.value });
 
   const onSubmit = async event => {
     event.preventDefault();
     try {
-      const result = await doCreateUserWithEmailAndPassword(user.email, user.passwordOne);
-      console.log(result);
+      const user = await doCreateUserWithEmailAndPassword(email, passwordOne);
+      console.log(user);
       setUser(INITIAL_STATE);
+      history.push(ROUTES.HOME);
     } catch (error) {
-      return error;
+      setUser({ ...user, [error]: error });
     }
   };
-
-  const onChange = event => setUser({ ...user, [event.target.name]: event.target.valuelue });
 
   return (
     <form onSubmit={onSubmit}>
       <input 
         type='text'
         name='username'
-        value={user.username}
+        value={username}
         onChange={onChange}
         placeholder='Full Name'
       />
       <input 
         type='text'
         name='email'
-        value={user.email}
+        value={email}
         onChange={onChange}
         placeholder='Email'
       />
       <input 
         type='text'
         name='passwordOne'
-        value={user.passwordOne}
+        value={passwordOne}
         onChange={onChange}
         placeholder='Password'
       />
       <input 
         type='text'
         name='passwordTwo'
-        value={user.passwordTwo}
+        value={passwordTwo}
         onChange={onChange}
         placeholder='Confirm Password'
       />
       <button disabled={isInvalid} type='submit'>Sign Up</button>
 
-      {user.error && <p>{user.error.message}</p>}
+      {error && <p>{error.message}</p>}
     </form>
   );
 };
