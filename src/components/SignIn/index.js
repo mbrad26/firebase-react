@@ -26,6 +26,7 @@ const SignInForm = () => {
   const [user, setUser] = useState(INITIAL_STATE);
   const { email, password, error } = user;
   const history = useHistory();
+  
   const isInvalid = email === '' || password === '';
 
   const onChange = event => setUser({ ...user, [event.target.name]: event.target.value });
