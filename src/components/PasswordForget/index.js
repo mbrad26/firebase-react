@@ -27,7 +27,7 @@ const PasswordForgetForm = () => {
   const onSubmit = async event => {
     event.preventDefault();
     try {
-      const result = await doPasswordReset(email);
+      await doPasswordReset(email);
       setCredentials(INITIAL_STATE);
     } catch (error) {
       setCredentials({ ...credentials, [error]: error });
