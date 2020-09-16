@@ -10,41 +10,44 @@ import HomePage from '../Home';
 import AccountPage from '../Account';
 import AdminPage from '../Admin';
 
+import { AuthUserContext } from '../Session';
 import { FirebaseContext } from '../Firebase';
 import * as ROUTES from '../../constants/routes';
 
 const App = () => {
   const { doCurrentUser } = useContext(FirebaseContext);
-  const [authUser, setAuthUser] = useState();
+  const [authUser, setAuthUser] = useState(null);
 
   useEffect(() => {
     const unsubscribe = doCurrentUser().onAuthStateChanged(user => 
       user ? setAuthUser(user) : setAuthUser(null)
       )
 
-      return () => unsubscribe();
+    return () => unsubscribe();
   }, [doCurrentUser]);
 
   console.log('AUTH: ', authUser);
 
   return (
-    <Router>
-      <div>
-        <Navigation authUser={authUser} />
+    <AuthUserContext.Provider value={authUser}>
+      <Router>
+        <div>
+          <Navigation />
 
-        <hr />
-        <Switch>
-          <Route exact path={ROUTES.LANDING} component={LandingPage} />
-          <Route path={ROUTES.SIGN_UP} component={SignUpPage} />
-          <Route path={ROUTES.SIGN_IN} component={SignInPage} />
-          <Route path={ROUTES.PASSWORD_FORGET} component={PasswordForgetPage} />
-          <Route path={ROUTES.HOME} component={HomePage} />
-          <Route path={ROUTES.ACCOUNT} component={AccountPage} />
-          <Route path={ROUTES.ADMIN} component={AdminPage} />
-        </Switch>
-      </div>
-    </Router>
-
+          <hr />
+          
+          <Switch>
+            <Route exact path={ROUTES.LANDING} component={LandingPage} />
+            <Route path={ROUTES.SIGN_UP} component={SignUpPage} />
+            <Route path={ROUTES.SIGN_IN} component={SignInPage} />
+            <Route path={ROUTES.PASSWORD_FORGET} component={PasswordForgetPage} />
+            <Route path={ROUTES.HOME} component={HomePage} />
+            <Route path={ROUTES.ACCOUNT} component={AccountPage} />
+            <Route path={ROUTES.ADMIN} component={AdminPage} />
+          </Switch>
+        </div>
+      </Router>
+    </AuthUserContext.Provider>
   )
 }
 
