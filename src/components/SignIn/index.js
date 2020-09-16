@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 import { SignUpLink } from '../SignUp';
 import { FirebaseContext } from '../Firebase';

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 
 import Navigation from '../Navigation';
@@ -10,13 +10,27 @@ import HomePage from '../Home';
 import AccountPage from '../Account';
 import AdminPage from '../Admin';
 
+import { FirebaseContext } from '../Firebase';
 import * as ROUTES from '../../constants/routes';
 
 const App = () => {
+  const { doCurrentUser } = useContext(FirebaseContext);
+  const [authUser, setAuthUser] = useState();
+
+  useEffect(() => {
+    const unsubscribe = doCurrentUser().onAuthStateChanged(user => 
+      user ? setAuthUser(user) : setAuthUser(null)
+      )
+
+      return () => unsubscribe();
+  }, [doCurrentUser]);
+
+  console.log('AUTH: ', authUser);
+
   return (
     <Router>
       <div>
-        <Navigation />
+        <Navigation authUser={authUser} />
 
         <hr />
         <Switch>
