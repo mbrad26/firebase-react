@@ -13,20 +13,32 @@ import AdminPage from '../Admin';
 import { AuthUserContext } from '../Session';
 import { FirebaseContext } from '../Firebase';
 import * as ROUTES from '../../constants/routes';
+// import { auth } from 'firebase';
 
 const App = () => {
-  const { doCurrentUser } = useContext(FirebaseContext);
+  const { doCurrentUser, user } = useContext(FirebaseContext);
   const [authUser, setAuthUser] = useState(null);
 
   useEffect(() => {
-    const unsubscribe = doCurrentUser().onAuthStateChanged(user => 
-      user ? setAuthUser(user) : setAuthUser(null)
-      )
+    const unsubscribe = doCurrentUser().onAuthStateChanged(authUser => {
+      if(authUser) {
+        user(authUser.uid)
+          .once('value')
+          .then(snapshot => {
+            const dbUser = snapshot.val();
+
+            setAuthUser({ ...dbUser, uid: authUser.uid, email: authUser.email });
+          });
+      } else {
+        setAuthUser(null);
+      }
+      // user ? setAuthUser(user) : setAuthUser(null)
+    })
       
-      return () => unsubscribe();
-    }, [doCurrentUser]);
+    return () => unsubscribe();
+  }, [doCurrentUser, user]);
     
-    console.log('AUTH: ', authUser);
+    console.log('AUTH: ', authUser ? authUser: null);
 
   return (
     <AuthUserContext.Provider value={authUser}>

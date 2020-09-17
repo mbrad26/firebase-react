@@ -8,7 +8,7 @@ const HomePage = () => {
   const authUser = useContext(AuthUserContext);
 
   if(!authUser) return <Redirect to={ROUTES.SIGN_IN} />
-
+  
   return (
     <div>
       Home
