@@ -1,10 +1,11 @@
 import React, { useState, useContext } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, Redirect } from 'react-router-dom';
 
 import { SignUpLink } from '../SignUp';
-import { PasswordForgetLink } from '../PasswordForget';
 import { FirebaseContext } from '../Firebase';
+import { AuthUserContext } from '../Session';
 import * as ROUTES from '../../constants/routes';
+import { PasswordForgetLink } from '../PasswordForget';
 
 const SignInPage = () => {
   return (
@@ -24,15 +25,16 @@ const INITIAL_STATE = {
 }
 
 const SignInForm = () => {
+  const authUser = useContext(AuthUserContext);
   const { doSignInWithEmailAndPassword } = useContext(FirebaseContext);
   const [user, setUser] = useState(INITIAL_STATE);
   const { email, password, error } = user;
   const history = useHistory();
   
   const isInvalid = email === '' || password === '';
-
+  
   const onChange = event => setUser({ ...user, [event.target.name]: event.target.value });
-
+  
   const onSubmit = async event => {
     event.preventDefault();
     try {

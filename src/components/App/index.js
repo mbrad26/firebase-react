@@ -13,7 +13,6 @@ import AdminPage from '../Admin';
 import { AuthUserContext } from '../Session';
 import { FirebaseContext } from '../Firebase';
 import * as ROUTES from '../../constants/routes';
-// import { auth } from 'firebase';
 
 const App = () => {
   const { doCurrentUser, user } = useContext(FirebaseContext);
@@ -32,7 +31,6 @@ const App = () => {
       } else {
         setAuthUser(null);
       }
-      // user ? setAuthUser(user) : setAuthUser(null)
     })
       
     return () => unsubscribe();
