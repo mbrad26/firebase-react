@@ -22,11 +22,11 @@ const App = () => {
     const unsubscribe = doCurrentUser().onAuthStateChanged(user => 
       user ? setAuthUser(user) : setAuthUser(null)
       )
-
-    return () => unsubscribe();
-  }, [doCurrentUser]);
-
-  console.log('AUTH: ', authUser);
+      
+      return () => unsubscribe();
+    }, [doCurrentUser]);
+    
+    console.log('AUTH: ', authUser);
 
   return (
     <AuthUserContext.Provider value={authUser}>
