@@ -22,11 +22,11 @@ const INITIAL_STATE = {
 };
 
 const SignUpForm = () => {
-  const { doCreateUserWithEmailAndPassword } = useContext(FirebaseContext);
-  const [user, setUser] = useState(INITIAL_STATE);
+  const { doCreateUserWithEmailAndPassword, user } = useContext(FirebaseContext);
+  const [authUser, setAuthUser] = useState(INITIAL_STATE);
   const history = useHistory();
 
-  const { username, email, passwordOne, passwordTwo, error } = user;
+  const { username, email, passwordOne, passwordTwo, error } = authUser;
 
   const isInvalid = 
     passwordOne !== passwordTwo ||
@@ -35,17 +35,20 @@ const SignUpForm = () => {
     username === '';
 
   const onChange = event =>
-    setUser({ ...user, [event.target.name]: event.target.value });
+    setAuthUser({ ...authUser, [event.target.name]: event.target.value });
 
   const onSubmit = async event => {
     event.preventDefault();
     try {
-      const user = await doCreateUserWithEmailAndPassword(email, passwordOne);
-      console.log(user);
-      setUser(INITIAL_STATE);
+      const result = await doCreateUserWithEmailAndPassword(email, passwordOne);
+      await user(result.user.uid).set({ username, email });
+
+      console.log(result);
+
+      setAuthUser(INITIAL_STATE);
       history.push(ROUTES.HOME);
     } catch (error) {
-      setUser({ ...user, [error]: error });
+      setAuthUser({ ...authUser, [error]: error });
     }
   };
 
