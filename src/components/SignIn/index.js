@@ -14,6 +14,7 @@ const SignInPage = () => {
       <SignInForm />
       <SignInGoogle />
       <SignInFacebook />
+      <SignInTwitter />
       <PasswordForgetLink />
       <SignUpLink />
     </div>
@@ -124,6 +125,36 @@ const SignInFacebook = () => {
   return (
     <form onSubmit={onSubmit}>
       <button type='submit'>Sign In with Facebook</button>
+
+      {error && <p>{error.message}</p>}
+    </form>
+  );
+};
+
+const SignInTwitter = () => {
+  const { doSignInWithTwitter, user } = useContext(FirebaseContext);
+  const [error, setError] = useState();
+  const history = useHistory();
+
+  const onSubmit = async event => {
+    event.preventDefault();
+    try {
+      const response = doSignInWithTwitter();
+      user(response.user.uid).set({
+        username: response.additionalUserInfo.profile.name,
+        email: response.additionalUserInfo.profile.email,
+        roles: {},
+      });
+
+      history.push(ROUTES.HOME);
+    } catch (error) {
+      setError(error);
+    }
+  }
+
+  return (
+    <form onSubmit={onSubmit}>
+      <button>Sign In with Twitter</button>
 
       {error && <p>{error.message}</p>}
     </form>
