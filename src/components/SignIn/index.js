@@ -13,6 +13,7 @@ const SignInPage = () => {
       <h1>Sign In</h1>
       <SignInForm />
       <SignInGoogle />
+      <SignInFacebook />
       <PasswordForgetLink />
       <SignUpLink />
     </div>
@@ -93,6 +94,36 @@ const SignInGoogle = () => {
   return (
     <form onSubmit={onSubmit}>
       <button type='submit'>Sign In with Google</button>
+
+      {error && <p>{error.message}</p>}
+    </form>
+  );
+};
+
+const SignInFacebook = () => {
+  const { doSignInWithFacebook, user } = useContext(FirebaseContext);
+  const [error, setError] = useState();
+  const history = useHistory();
+
+  const onSubmit = async event => {
+    event.preventDefault();
+    try {
+      const response = await doSignInWithFacebook();
+      user(response.user.uid).set({
+        username: response.additionalUserInfo.profile.name,
+        email: response.additionalUserInfo.profile.email,
+        roles: {},
+      });
+
+      history.push(ROUTES.HOME)
+    } catch (error) {
+      setError(error);
+    }
+  }
+
+  return (
+    <form onSubmit={onSubmit}>
+      <button type='submit'>Sign In with Facebook</button>
 
       {error && <p>{error.message}</p>}
     </form>
