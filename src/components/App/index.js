@@ -16,7 +16,7 @@ import * as ROUTES from '../../constants/routes';
 
 const App = () => {
   const { doCurrentUser, user } = useContext(FirebaseContext);
-  const [authUser, setAuthUser] = useState(null);
+  const [authUser, setAuthUser] = useState(JSON.parse(localStorage.getItem('authUser')));
 
   useEffect(() => {
     const unsubscribe = doCurrentUser().onAuthStateChanged(authUser => {
@@ -26,11 +26,20 @@ const App = () => {
           .then(snapshot => {
             const dbUser = snapshot.val();
 
-            setAuthUser({ ...dbUser, uid: authUser.uid, email: authUser.email });
+            authUser = {
+              ...dbUser, 
+              uid: authUser.uid, 
+              email: authUser.email,
+            };
+            
+            localStorage.setItem('authUser', JSON.stringify(authUser));
+            setAuthUser(authUser);
           });
       } else {
+        localStorage.removeItem('authUser');
         setAuthUser(null);
       }
+
     })
       
     return () => unsubscribe();

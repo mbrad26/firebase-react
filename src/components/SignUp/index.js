@@ -28,6 +28,8 @@ const SignUpForm = () => {
   const [authUser, setAuthUser] = useState(INITIAL_STATE);
   const history = useHistory();
 
+  console.log('HISTORY', history);
+
   const { username, email, passwordOne, passwordTwo, isAdmin, error } = authUser;
 
   const isInvalid = 
@@ -50,8 +52,6 @@ const SignUpForm = () => {
     try {
       const result = await doCreateUserWithEmailAndPassword(email, passwordOne);
       await user(result.user.uid).set({ username, email, roles });
-
-      console.log(result);
 
       setAuthUser(INITIAL_STATE);
       history.push(ROUTES.HOME);
