@@ -59,6 +59,9 @@ class Firebase {
   
   doCurrentUser = () => this.auth;
 
+  doSignInMethods = email =>
+    this.auth.fetchSignInMethodsForEmail(email);
+
   // *** USER API ***
 
   user = uid => this.db.ref(`users/${uid}`);
