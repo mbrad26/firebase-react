@@ -5,6 +5,17 @@ import { FirebaseContext } from '../Firebase';
 import * as ROLES from '../../constants/roles';
 import * as ROUTES from '../../constants/routes';
 
+const ERROR_CODE_ACCOUNT_EXISTS = 'auth/email-already-in-use';
+
+const ERROR_MSG_ACCOUNT_EXISTS = `
+  An account with this E-Mail address already exists.
+  Try to login with this account instead. If you think the 
+  account is already used from one of the social logins, try
+  to sign-in with one of them. Afterward, associate your accounts 
+  on your personal account page.
+`;
+
+
 const SignUpPage = () => {
   return (
     <div>
@@ -27,8 +38,6 @@ const SignUpForm = () => {
   const { doCreateUserWithEmailAndPassword, user } = useContext(FirebaseContext);
   const [authUser, setAuthUser] = useState(INITIAL_STATE);
   const history = useHistory();
-
-  console.log('HISTORY', history);
 
   const { username, email, passwordOne, passwordTwo, isAdmin, error } = authUser;
 
@@ -56,6 +65,10 @@ const SignUpForm = () => {
       setAuthUser(INITIAL_STATE);
       history.push(ROUTES.HOME);
     } catch (error) {
+      if(error.code === ERROR_CODE_ACCOUNT_EXISTS) {
+        error.message = ERROR_MSG_ACCOUNT_EXISTS;
+      }
+      
       setAuthUser({ ...authUser, [error]: error });
     }
   };

@@ -6,6 +6,25 @@ import PasswordChangeForm from '../PasswordChange';
 import { PasswordForgetForm } from '../PasswordForget';
 import * as ROUTES from '../../constants/routes';
 
+const SIGN_IN_METHODS = [
+  {
+    id: 'passowrd',
+    provider: null,
+  },
+  {
+    id: 'google.com',
+    provider: 'googleProvider',
+  },
+  {
+    id: 'facebook.com',
+    provider: 'facebookProvider',
+  },
+  {
+    id: 'twitter.com',
+    provider: 'twitterProvider',
+  },
+];
+
 const AccountPage = () => {
   const authUser = useContext(AuthUserContext);
   
@@ -16,8 +35,27 @@ const AccountPage = () => {
       <h1>Account: {authUser.email}</h1>
       <PasswordForgetForm />
       <PasswordChangeForm />
+      <LoginManagement authUser={authUser} />
     </div>
-  )
-}
+  );
+};
+
+const LoginManagement = () => {
+
+  return (
+    <div>
+      Sign In Methods: 
+      <ul>
+        {SIGN_IN_METHODS.map(method => 
+          <li key={method.id}>
+            <button type='button' onClick={() => {}}>
+              {method.id}
+            </button>
+          </li>
+          )}
+      </ul>
+    </div>
+  );
+};
 
 export default AccountPage;
