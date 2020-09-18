@@ -38,7 +38,7 @@ const Authenticated = ({ authUser }) =>
       </li>
     </ul>
 
-    <h3 style={{float: 'right'}}>Welcome {authUser.email}!</h3>
+    <h3 style={{float: 'right'}}>Welcome {authUser.email || authUser.username}!</h3>
   </div>
 
 const Unauthenticated = () => 

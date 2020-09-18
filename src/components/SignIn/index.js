@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { useHistory, Redirect } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 import { SignUpLink } from '../SignUp';
 import { FirebaseContext } from '../Firebase';
@@ -12,6 +12,7 @@ const SignInPage = () => {
     <div>
       <h1>Sign In</h1>
       <SignInForm />
+      <SignInGoogle />
       <PasswordForgetLink />
       <SignUpLink />
     </div>
@@ -25,7 +26,6 @@ const INITIAL_STATE = {
 }
 
 const SignInForm = () => {
-  const authUser = useContext(AuthUserContext);
   const { doSignInWithEmailAndPassword } = useContext(FirebaseContext);
   const [user, setUser] = useState(INITIAL_STATE);
   const { email, password, error } = user;
@@ -63,6 +63,36 @@ const SignInForm = () => {
         placeholder='Password' 
       />
       <button type='submit' disabled={isInvalid}>Sign In</button>
+
+      {error && <p>{error.message}</p>}
+    </form>
+  );
+};
+
+const SignInGoogle = () => {
+  const { doSignInWithGoogle, user } = useContext(FirebaseContext);
+  const [error, setError] = useState();
+  const history = useHistory();
+
+  const onSubmit = async event => {
+    event.preventDefault();
+    try {
+      const response = await doSignInWithGoogle();
+      user(response.user.uid).set({
+        username: response.user.displayName,
+        email: response.user.email,
+        roles: {},
+      });
+
+      history.push(ROUTES.HOME);
+    } catch (error) {
+      setError(error);
+    }
+  }
+
+  return (
+    <form onSubmit={onSubmit}>
+      <button type='submit'>Sign In with Google</button>
 
       {error && <p>{error.message}</p>}
     </form>
