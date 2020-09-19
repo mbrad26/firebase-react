@@ -42,7 +42,7 @@ const HomePage = () => {
     <div>
       <h1>Home Page</h1>
 
-      <Messages />
+      <Messages authUser={authUser} />
     </div>
   );
 };
@@ -50,12 +50,13 @@ const HomePage = () => {
 const INITIAL_STATE = {
   loading: false,
   messages: [],
+  text: '',
 }
 
-const Messages = () => {
+const Messages = ({ authUser }) => {
   const { messages } = useContext(FirebaseContext);
   const [state, setState] = useState(INITIAL_STATE);
-  const { loading, msgs } = state;
+  const { loading, msgs, text } = state;
 
   useEffect(() => {
     setState({ ...state, loading: true});
@@ -76,7 +77,18 @@ const Messages = () => {
 
     })
     return () => messages().off();
-  }, [])
+  }, [messages])
+
+  const onChangeText = event => 
+    setState({ ...state, text: event.target.value });
+
+  const onCreateMessage = (event, authUser) => {
+    event.preventDefault();
+    messages().push({ text: text, userId: authUser.uid, });
+    setState({ ...state, text: '', });
+  }
+
+  console.log('MESSAGE: ', messages);
 
   return (
     <div>
@@ -91,6 +103,15 @@ const Messages = () => {
           </ul>
         : <div>There are no messages ...</div>
       }
+
+      <form onSubmit={event => onCreateMessage(event, authUser)}>
+        <input 
+          type="text"
+          value={text}
+          onChange={onChangeText}
+        />
+        <button type='submit'>Send</button>
+      </form>
     </div>
   );
 };
