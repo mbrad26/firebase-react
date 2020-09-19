@@ -1,4 +1,4 @@
-import * as firebase from 'firebase/app';
+import firebase from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/database';
 
@@ -20,36 +20,19 @@ class Firebase {
     this.auth = firebase.auth();
     this.db = firebase.database();
 
-    // *** Google ***
+    // *** Social ***
     this.googleProvider = new firebase.auth.GoogleAuthProvider();
-
-    // *** Facebook ***
     this.facebookProvider = new firebase.auth.FacebookAuthProvider();
-
-    // *** Twitter ***
     this.twitterProvider = new firebase.auth.TwitterAuthProvider();
   }
 
   // *** AUTH API ***
-
   doCreateUserWithEmailAndPassword = (email, password) =>
     this.auth.createUserWithEmailAndPassword(email, password);
 
   doSignInWithEmailAndPassword = (email, password) => 
     this.auth.signInWithEmailAndPassword(email, password);
-
-  // *** Google ***
-  doSignInWithGoogle = () => 
-    this.auth.signInWithPopup(this.googleProvider);
-
-  // *** Facebook ***
-  doSignInWithFacebook = () => 
-    this.auth.signInWithPopup(this.facebookProvider);
   
-  // *** Twitter ***
-  doSignInWithTwitter = () => 
-    this.auth.signInWithPopup(this.twitterProvider);
-
   doSignOut = () => this.auth.signOut();
 
   doPasswordReset = email => this.auth.sendPasswordResetEmail(email);
@@ -62,8 +45,22 @@ class Firebase {
   doSignInMethods = email =>
     this.auth.fetchSignInMethodsForEmail(email);
 
-  // *** USER API ***
+  // *** Social ***
+  doSignInWithGoogle = () => 
+    this.auth.signInWithPopup(this.googleProvider);
 
+  doSignInWithFacebook = () => 
+    this.auth.signInWithPopup(this.facebookProvider);
+  
+  doSignInWithTwitter = () => 
+    this.auth.signInWithPopup(this.twitterProvider);
+
+  doSendEmailVerification = () => 
+    this.auth.currentUser.sendEmailVerification({
+      url: process.env.REACT_APP_CONFIRMATION_EMAIL_REDIRECT,
+    });
+
+  // *** USER API ***
   user = uid => this.db.ref(`users/${uid}`);
 
   users = () => this.db.ref('users');

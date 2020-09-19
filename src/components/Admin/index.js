@@ -12,8 +12,10 @@ const INITIAL_STATE = {
 
 const AdminPage = () => {
   const authUser = useContext(AuthUserContext);
-  const { users } = useContext(FirebaseContext);
+  const { doSendEmailVerification, users } = useContext(FirebaseContext);
   const [state, setState] = useState(INITIAL_STATE);
+
+  const onSendEmailVerification = () => doSendEmailVerification();
 
   useEffect(() => {
     setState({ ...state, loading: true});
@@ -34,7 +36,29 @@ const AdminPage = () => {
   
   if(!authUser || (authUser && !authUser.roles)) return <Redirect to={ROUTES.SIGN_IN} />
 
-  console.log(state.users);
+  if(authUser && 
+    !authUser.emailVerified &&
+    authUser.providerData 
+            .map(provider => provider.providerId)
+            .includes('password')
+    ) {
+      return (
+        <div>
+          <p>
+            Verify your E-Mail: Check you E-Mails (Spam folder 
+            included) for a confirmation E-Mail or 
+            send another confirmation E-Mail.
+          </p>
+
+          <button
+            type="button" 
+            onClick={onSendEmailVerification}
+          >
+          Send confirmation E-Mail
+          </button>
+        </div>
+      )
+    }
 
   return (
     <div>

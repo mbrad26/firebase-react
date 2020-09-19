@@ -15,7 +15,6 @@ const ERROR_MSG_ACCOUNT_EXISTS = `
   on your personal account page.
 `;
 
-
 const SignUpPage = () => {
   return (
     <div>
@@ -35,10 +34,13 @@ const INITIAL_STATE = {
 };
 
 const SignUpForm = () => {
-  const { doCreateUserWithEmailAndPassword, user } = useContext(FirebaseContext);
+  const { 
+    doCreateUserWithEmailAndPassword,
+    doSendEmailVerification, 
+    user 
+  } = useContext(FirebaseContext);
   const [authUser, setAuthUser] = useState(INITIAL_STATE);
   const history = useHistory();
-
   const { username, email, passwordOne, passwordTwo, isAdmin, error } = authUser;
 
   const isInvalid = 
@@ -61,6 +63,7 @@ const SignUpForm = () => {
     try {
       const result = await doCreateUserWithEmailAndPassword(email, passwordOne);
       await user(result.user.uid).set({ username, email, roles });
+      await doSendEmailVerification();
 
       setAuthUser(INITIAL_STATE);
       history.push(ROUTES.HOME);

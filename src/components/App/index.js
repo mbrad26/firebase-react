@@ -30,6 +30,8 @@ const App = () => {
               ...dbUser, 
               uid: authUser.uid, 
               email: authUser.email,
+              emailVerified: authUser.emailVerified,
+              providerData: authUser.providerData,
             };
             
             localStorage.setItem('authUser', JSON.stringify(authUser));
@@ -39,7 +41,6 @@ const App = () => {
         localStorage.removeItem('authUser');
         setAuthUser(null);
       }
-
     })
       
     return () => unsubscribe();
