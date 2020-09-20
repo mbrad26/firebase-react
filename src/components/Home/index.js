@@ -12,7 +12,6 @@ const HomePage = () => {
   const onSendEmailVerification = () => doSendEmailVerification();
 
   if(!authUser) return <Redirect to={ROUTES.SIGN_IN} />
-  console.log('AUTHENTICATED: ', authUser);
 
   if(authUser && 
     !authUser.emailVerified &&
@@ -131,6 +130,7 @@ const Messages = ({ authUser }) => {
               <MessageItem 
                 key={message.uid} 
                 message={message} 
+                authUser={authUser}
                 onEditMessage={onEditMessage}
                 onRemoveMessage={onRemoveMessage}
               />
@@ -143,7 +143,7 @@ const Messages = ({ authUser }) => {
   );
 };
 
-const MessageItem = ({ message, onRemoveMessage, onEditMessage }) => {
+const MessageItem = ({ message, authUser, onRemoveMessage, onEditMessage }) => {
   const [editMode, setEditMode] = useState(false);
   const [editText, setEditText] = useState(message.text);
 
@@ -173,19 +173,22 @@ const MessageItem = ({ message, onRemoveMessage, onEditMessage }) => {
           </span>
       }
 
-      {editMode 
-        ? <span>
-            <button onClick={onSaveEditText}>Save</button>
-            <button onClick={onToggleEditMode}>Reset</button>
-          </span>
-        : <button onClick={onToggleEditMode}>Edit</button>
-      }
-
-      {!editMode && 
-        <button 
-          type='button'
-          onClick={() => onRemoveMessage(message.uid)}
-        >Delete</button>
+      {authUser.uid === message.userId && 
+        <span>
+          {editMode 
+            ? <span>
+                <button onClick={onSaveEditText}>Save</button>
+                <button onClick={onToggleEditMode}>Reset</button>
+              </span>
+            : <button onClick={onToggleEditMode}>Edit</button>
+          }
+          {!editMode && 
+            <button 
+              type='button'
+              onClick={() => onRemoveMessage(message.uid)}
+            >Delete</button>
+          }
+        </span>
       }
     </li>
   );
