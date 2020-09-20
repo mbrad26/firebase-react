@@ -24,7 +24,12 @@ class Firebase {
     this.googleProvider = new firebase.auth.GoogleAuthProvider();
     this.facebookProvider = new firebase.auth.FacebookAuthProvider();
     this.twitterProvider = new firebase.auth.TwitterAuthProvider();
+
+    // *** Helper ***
+    this.serverValue = firebase.database.ServerValue;
   }
+
+  doServerValue = () => this.serverValue;
 
   // *** AUTH API ***
   doCreateUserWithEmailAndPassword = (email, password) =>

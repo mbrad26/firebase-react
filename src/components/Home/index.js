@@ -53,7 +53,7 @@ const INITIAL_STATE = {
 }
 
 const Messages = ({ authUser }) => {
-  const { messages, message } = useContext(FirebaseContext);
+  const { messages, message, doServerValue } = useContext(FirebaseContext);
   const [state, setState] = useState(INITIAL_STATE);
   const [text, setText] = useState('');
   const { loading, msgs } = state;
@@ -85,7 +85,11 @@ const Messages = ({ authUser }) => {
 
   const onCreateMessage = event => {
     try {
-      messages().push({ text: text, userId: authUser.uid, });
+      messages().push({ 
+        text: text, 
+        userId: authUser.uid, 
+        createdAt: doServerValue().TIMESTAMP,
+      });
       
       setText('');
     } catch (error) {
@@ -97,7 +101,15 @@ const Messages = ({ authUser }) => {
   const onRemoveMessage = uid => 
     message(uid).remove();
 
-  console.log('MESSAGE: ', msgs);
+  const onEditMessage = (mesage, text) => {
+    const { uid, ...messageSnapshot } = mesage;
+
+    message(mesage.uid).set({ 
+      ...messageSnapshot, 
+      text,
+      editedAt: doServerValue().TIMESTAMP,
+    });
+  };
 
   return (
     <div>
@@ -119,6 +131,7 @@ const Messages = ({ authUser }) => {
               <MessageItem 
                 key={message.uid} 
                 message={message} 
+                onEditMessage={onEditMessage}
                 onRemoveMessage={onRemoveMessage}
               />
               )}
@@ -130,13 +143,52 @@ const Messages = ({ authUser }) => {
   );
 };
 
-const MessageItem = ({ message, onRemoveMessage }) =>
-  <li>
-    <strong>{message.userId}</strong> {message.text}
-    <button 
-      type='button'
-      onClick={() => onRemoveMessage(message.uid)}
-    >Delete</button>
-  </li>
+const MessageItem = ({ message, onRemoveMessage, onEditMessage }) => {
+  const [editMode, setEditMode] = useState(false);
+  const [editText, setEditText] = useState(message.text);
+
+  const onToggleEditMode = () => {
+    setEditMode(!editMode);
+    setEditText(message.text);
+  };
+
+  const onChangeEditText = event =>
+    setEditText(event.target.value);
+
+  const onSaveEditText = () => {
+    onEditMessage(message, editText);
+    setEditMode(false);
+  }
+
+  return (
+    <li>
+      {editMode 
+        ? <input 
+            type='text' 
+            value={editText} 
+            onChange={onChangeEditText}
+          />
+        : <span>
+            <strong>{message.userId}</strong> {message.text}
+          </span>
+      }
+
+      {editMode 
+        ? <span>
+            <button onClick={onSaveEditText}>Save</button>
+            <button onClick={onToggleEditMode}>Reset</button>
+          </span>
+        : <button onClick={onToggleEditMode}>Edit</button>
+      }
+
+      {!editMode && 
+        <button 
+          type='button'
+          onClick={() => onRemoveMessage(message.uid)}
+        >Delete</button>
+      }
+    </li>
+  );
+};
 
 export default HomePage;
