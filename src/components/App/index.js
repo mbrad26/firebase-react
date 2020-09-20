@@ -46,8 +46,6 @@ const App = () => {
     return () => unsubscribe();
   }, [doCurrentUser, user]);
     
-    console.log('AUTH: ', authUser ? authUser: null);
-
   return (
     <AuthUserContext.Provider value={authUser}>
       <Router>

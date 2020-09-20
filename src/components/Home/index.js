@@ -50,13 +50,13 @@ const HomePage = () => {
 const INITIAL_STATE = {
   loading: false,
   messages: [],
-  text: '',
 }
 
 const Messages = ({ authUser }) => {
-  const { messages } = useContext(FirebaseContext);
+  const { messages, message } = useContext(FirebaseContext);
   const [state, setState] = useState(INITIAL_STATE);
-  const { loading, msgs, text } = state;
+  const [text, setText] = useState('');
+  const { loading, msgs } = state;
 
   useEffect(() => {
     setState({ ...state, loading: true});
@@ -76,35 +76,35 @@ const Messages = ({ authUser }) => {
       }
 
     })
+    
     return () => messages().off();
-  }, [messages])
+  }, [])
 
   const onChangeText = event => 
-    setState({ ...state, text: event.target.value });
+    setText(event.target.value);
 
-  const onCreateMessage = (event, authUser) => {
+  const onCreateMessage = event => {
+    try {
+      messages().push({ text: text, userId: authUser.uid, });
+      
+      setText('');
+    } catch (error) {
+      console.log(error);
+    }
     event.preventDefault();
-    messages().push({ text: text, userId: authUser.uid, });
-    setState({ ...state, text: '', });
-  }
+  };
 
-  console.log('MESSAGE: ', messages);
+  const onRemoveMessage = uid => 
+    message(uid).remove();
+
+  console.log('MESSAGE: ', msgs);
 
   return (
     <div>
       Messages
       {loading && <div>Loading ...</div>}
 
-      {msgs 
-        ? <ul>
-            {msgs.map(message => 
-              <MessageItem key={message.uid} message={message} />
-              )}
-          </ul>
-        : <div>There are no messages ...</div>
-      }
-
-      <form onSubmit={event => onCreateMessage(event, authUser)}>
+      <form onSubmit={event => onCreateMessage(event)}>
         <input 
           type="text"
           value={text}
@@ -112,13 +112,31 @@ const Messages = ({ authUser }) => {
         />
         <button type='submit'>Send</button>
       </form>
+
+      {msgs 
+        ? <ul>
+            {msgs.map(message => 
+              <MessageItem 
+                key={message.uid} 
+                message={message} 
+                onRemoveMessage={onRemoveMessage}
+              />
+              )}
+          </ul>
+        : <div>There are no messages ...</div>
+      }
+
     </div>
   );
 };
 
-const MessageItem = ({ message }) =>
+const MessageItem = ({ message, onRemoveMessage }) =>
   <li>
     <strong>{message.userId}</strong> {message.text}
+    <button 
+      type='button'
+      onClick={() => onRemoveMessage(message.uid)}
+    >Delete</button>
   </li>
 
 export default HomePage;

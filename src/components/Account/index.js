@@ -6,7 +6,6 @@ import { FirebaseContext } from '../Firebase';
 import PasswordChangeForm from '../PasswordChange';
 import { PasswordForgetForm } from '../PasswordForget';
 import * as ROUTES from '../../constants/routes';
-import { auth } from 'firebase';
 
 const SIGN_IN_METHODS = [
   {
@@ -78,8 +77,6 @@ const LoginManagement = ({ authUser }) => {
   const { doSignInMethods, doCurrentUser } = useContext(FirebaseContext);
   const [state, setState] = useState(INITIAL_STATE);
   const { activeSignInMethods, error } = state;
-
-  console.log('METHODS: ', activeSignInMethods);
 
   const fetchSignInMethods = useCallback(async () => {
     try {

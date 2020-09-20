@@ -112,8 +112,6 @@ const UserItem = props => {
   const [state, setState] = useState({ ...props.location.state, loading: false, userDetails: null });
   const { loading, userDetails } = state;
 
-  console.log('PROPS: ', props);
-
   useEffect(() => {
     if(state.userDetails) return;
     setState({ ...state, loading: true });
